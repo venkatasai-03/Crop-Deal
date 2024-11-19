@@ -71,18 +71,49 @@
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+        /* Error Message Styling */
+        .error {
+            color: red;
+            font-size: 1.1rem;
+            margin-top: 15px;
+        }
+        .preview-image {
+            max-width: 100%;
+            margin-top: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Crop Quality Detection</h1>
+
+    <!-- Error message for invalid file or no file -->
+    {% if messages %}
+        <div class="error">
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <!-- Form to upload image -->
     <form action="/" method="post" enctype="multipart/form-data">
         <label for="file">Upload an image of a crop:</label>
-        <input type="file" name="file" id="file">
+        <input type="file" name="file" id="file" accept="image/*" onchange="previewImage(event)">
         <button type="submit">Predict</button>
     </form>
 
+    <!-- Display uploaded image preview before submission -->
+    <div id="image-preview-container">
+        <img id="image-preview" class="preview-image" style="display:none;" />
+    </div>
+
+    <!-- Display prediction results -->
     {% if crop and quality %}
     <div class="result-section">
         <h2>Prediction Result</h2>
@@ -93,6 +124,24 @@
     </div>
     {% endif %}
 </div>
+
+<!-- JavaScript to show image preview -->
+<script>
+    function previewImage(event) {
+        const preview = document.getElementById('image-preview');
+        const file = event.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function() {
+            preview.style.display = 'block';
+            preview.src = reader.result;
+        }
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
 
 </body>
 </html>
